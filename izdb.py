@@ -10,7 +10,10 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.menus import CompletionsMenu
 
 import izdbui
-import libzpool
+import zdb
+
+DEFAULT_ARC_SIZE = 256 * 1024 * 1024
+DEFAULT_ARC_META_LIMIT = DEFAULT_ARC_SIZE
 
 
 class IZdbShell(CommandLineInterface):
@@ -30,21 +33,16 @@ class IZdbShell(CommandLineInterface):
         self.pool = pool
         self.dataset = None
         # Call ZDB
-        self.zdb_init()
-
-    def zdb_init(self):
-        libzpool.kernel_init(libzpool.FREAD)
-        libzpool.zfs_arc_max = 256 * 1024 * 1024
-
-    def zdb_fini(self):
-        libzpool.kernel_fini()
+        self.zdb = zdb.Zdb(DEFAULT_ARC_SIZE, DEFAULT_ARC_META_LIMIT)
+        self.zdb.zdb_init()
 
     def do_print(self, vars):
-        for var in vars:
-            if hasattr(libzpool, var):
-                print(var, '=', getattr(libzpool, var))
-            else:
-                print('No variable', var, 'found')
+        _print = lambda x: print('{} = {}'.format(x, getattr(self.zdb, x)))
+        try:
+            [_print(var) for var in vars]
+        except AttributeError as e:
+            print('No variable "{}"'.format(e))
+
 
     def repl(self):
         try:
@@ -62,7 +60,7 @@ class IZdbShell(CommandLineInterface):
                     print('No such command "{}"'.format(cmd))
         except Exit:
             print('Cleaning up')
-            self.zdb_fini()
+            self.zdb.zdb_fini()
 
 
 def main(args):
