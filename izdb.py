@@ -22,7 +22,7 @@ class IZdbShell(CommandLineInterface):
         prompt = izdbui.IZdbPrompt()
         menu = CompletionsMenu()
         layout = Layout(before_input=prompt,
-                        #lexer=izdbui.ZdbLexer,
+                        # lexer=izdbui.ZdbLexer,
                         bottom_toolbars=[izdbui.IZdbStatusLine()],
                         menus=[menu])
         line = Line(completer=izdbui.ZdbCompleter())
@@ -42,7 +42,6 @@ class IZdbShell(CommandLineInterface):
             [_print(var) for var in vars]
         except AttributeError as e:
             print('No variable "{}"'.format(e))
-
 
     def repl(self):
         try:
