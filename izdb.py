@@ -19,6 +19,7 @@ from pygments.token import Token
 import izdbui
 import libzpool
 
+
 class IZdbShell(CommandLineInterface):
     def __init__(self, pool=None):
         style = izdbui.IZdbStyle
@@ -40,20 +41,30 @@ class IZdbShell(CommandLineInterface):
 
     def zdb_init(self):
         libzpool.kernel_init(libzpool.FREAD)
+        libzpool.zfs_arc_max = 256 * 1024 * 1024
 
     def zdb_fini(self):
         libzpool.kernel_fini()
+
+    def do_print(self, vars):
+        for var in vars:
+            if hasattr(libzpool, var):
+                print(var, '=', getattr(libzpool, var))
+            else:
+                print('No variable', var, 'found')
 
     def repl(self):
         try:
             while True:
                 d = self.read_input(on_exit=self._onexit)
-                print('Got', d.text)
                 args = d.text.split()
+                print('Got {} ({})'.format(d.text, len(args)))
+                if len(args) == 0:
+                    continue
                 cmd = args.pop(0)
                 method = getattr(self, 'do_' + cmd, None)
                 if method:
-                    method(self, args)
+                    method(args)
                 else:
                     print('No such command', '"{}"'.format(cmd))
         except Exit:
