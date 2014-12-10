@@ -8,7 +8,7 @@ import ctypes as C
 FREAD = 1
 FWRITE = 2
 
-libzpoolfile = find_library('libzpool')
+libzpoolfile = find_library('zpool')
 __libzpool = C.CDLL(libzpoolfile)
 
 
