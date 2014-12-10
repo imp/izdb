@@ -10,6 +10,7 @@ from prompt_toolkit.line import Line
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.menus import CompletionsMenu
 from prompt_toolkit.layout.prompt import Prompt
+from prompt_toolkit.layout.toolbars import TextToolbar
 from pygments.styles import get_style_by_name
 from pygments.styles.default import DefaultStyle
 from pygments.style import Style
@@ -35,6 +36,7 @@ class ZdbCompleter(Completer):
 class IZdbStyle(Style):
     BaseStyle = get_style_by_name('monokai')
     styles = {
+        Token.Toolbar.StatusLine: 'bg:#440044 #ffffff',
         Token.Menu.Completions.Completion.Current: 'bg:#00aaaa #000000',
         Token.Menu.Completions.Completion: 'bg:#008888 #ffffff',
         Token.Menu.Completions.ProgressButton: 'bg:#003333',
@@ -54,16 +56,26 @@ class IZdbPrompt(Prompt):
             return [(Token.Prompt, 'izdb> ')]
 
 
-class IZdbCommandLine(CommandLineInterface):
+class IZdbStatusLine(TextToolbar):
+    def __init__(self):
+        super(IZdbStatusLine, self).__init__(token=Token.Toolbar.StatusLine)
+
+    def get_tokens(self, cli, width):
+        self.text = '{} (width {})'.format(cli.pool, width)
+        return super(IZdbStatusLine, self).get_tokens(cli, width)
+
+
+class IZdbShell(CommandLineInterface):
     def __init__(self, pool=None):
         style = IZdbStyle
         prompt = IZdbPrompt()
         menu = CompletionsMenu()
         layout = Layout(before_input=prompt,
                         #lexer=ZdbLexer,
+                        bottom_toolbars=[IZdbStatusLine()],
                         menus=[menu])
         line = Line(completer=ZdbCompleter())
-        super(IZdbCommandLine, self).__init__(layout=layout, line=line, style=style)
+        super(IZdbShell, self).__init__(layout=layout, line=line, style=style)
         self._onexit = AbortAction.RAISE_EXCEPTION
         self.debug = False
         self.readonly = True
@@ -80,7 +92,7 @@ class IZdbCommandLine(CommandLineInterface):
 
 
 def main(args):
-    app = IZdbCommandLine(pool='dpool')
+    app = IZdbShell(pool='dpool')
     app.repl()
     return 0
 
