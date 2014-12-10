@@ -5,16 +5,9 @@
 
 from __future__ import print_function
 from prompt_toolkit import CommandLineInterface, AbortAction, Exit
-from prompt_toolkit.completion import Completer, Completion
 from prompt_toolkit.line import Line
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.layout.menus import CompletionsMenu
-from prompt_toolkit.layout.prompt import Prompt
-from prompt_toolkit.layout.toolbars import TextToolbar
-from pygments.styles import get_style_by_name
-from pygments.styles.default import DefaultStyle
-from pygments.style import Style
-from pygments.token import Token
 
 import izdbui
 import libzpool
