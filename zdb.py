@@ -16,9 +16,9 @@ class Zdb(object):
         self.zfs_arc_meta_limit = arc_meta_limit
 
     def zdb_init(self):
-        libzpool.kernel_init(libzpool.FREAD)
         libzpool.zfs_arc_max = self.zfs_arc_max
         libzpool.zfs_arc_meta_limit = self.zfs_arc_meta_limit
+        libzpool.kernel_init(libzpool.FREAD)
 
     def zdb_fini(self):
         libzpool.kernel_fini()
