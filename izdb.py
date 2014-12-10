@@ -59,7 +59,7 @@ class IZdbShell(CommandLineInterface):
                 if method:
                     method(args)
                 else:
-                    print('No such command', '"{}"'.format(cmd))
+                    print('No such command "{}"'.format(cmd))
         except Exit:
             print('Cleaning up')
             self.zdb_fini()
