@@ -2,9 +2,20 @@
 # Copyright 2014 Cyril Plisko. All rights reserved.
 # Use is subject to license terms.
 #
+from ctypes.util import find_library
 import ctypes as C
 
-libzpoolfile = C.utils.find_library('libzpool')
+FREAD = 1
+FWRITE = 2
+
+libzpoolfile = find_library('libzpool')
 __libzpool = C.CDLL(libzpoolfile)
 
 
+kernel_init = __libzpool.kernel_init
+kernel_init.argtypes = [C.c_int]
+kernel_init.restype = None
+
+kernel_fini = __libzpool.kernel_fini
+kernel_fini.argtypes = None
+kernel_fini.restype = None
